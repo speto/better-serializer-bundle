@@ -1,0 +1,437 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: false
+
+    better_serializer:
+        alias: BetterSerializer\Serializer
+
+    BetterSerializer\Serializer:
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\ReaderInterface'
+            - '@BetterSerializer\DataBind\Writer\WriterInterface'
+
+    BetterSerializer\DataBind\Reader\ReaderInterface:
+        class: BetterSerializer\DataBind\Reader\Reader
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface'
+            - '@BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactoryInterface'
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\ProcessorFactoryInterface'
+            - '@BetterSerializer\DataBind\Reader\Context\ContextFactoryInterface'
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\ProcessorFactory:
+        class: BetterSerializer\DataBind\Reader\Processor\Factory\ProcessorFactory
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\RecursiveProcessorFactory:
+        arguments: ['@BetterSerializer\DataBind\Reader\Processor\Factory\ProcessorFactory']
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory:
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\RecursiveProcessorFactory'
+            - '@Doctrine\Common\Cache\Cache'
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\ProcessorFactoryInterface:
+        factory: BetterSerializer\DataBind\Reader\Processor\Factory\ProcessorFactoryBuilder::build
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory'
+            -
+                - '@BetterSerializer\DataBind\Reader\Processor\Factory\PropertyMetaDataChain\SimplePropertyMember'
+                - '@BetterSerializer\DataBind\Reader\Processor\Factory\PropertyMetaDataChain\ComplexPropertyMember'
+            -
+                - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\CollectionMember'
+                - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ClassMember'
+                - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\SimpleMember'
+                - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionMember'
+                - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionCollectionMember'
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\PropertyMetaDataChain\SimplePropertyMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\Converter\ConverterFactoryInterface'
+            - '@BetterSerializer\DataBind\Reader\Injector\Factory\AbstractFactoryInterface'
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\PropertyMetaDataChain\ComplexPropertyMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory'
+            - '@BetterSerializer\DataBind\Reader\Injector\Factory\AbstractFactoryInterface'
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\CollectionMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\Converter\ConverterFactoryInterface'
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory'
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ClassMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory'
+            - '@BetterSerializer\DataBind\Reader\Instantiator\Factory\InstantiatorFactoryInterface'
+            - '@BetterSerializer\DataBind\MetaData\Reader\ReaderInterface'
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\SimpleMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\Converter\ConverterFactoryInterface'
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionMember:
+        class: BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionMember
+
+    BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionCollectionMember:
+        arguments: ['@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory']
+
+    BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\ParamProcessorFactoryInterface:
+        class: BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\ParamProcessorFactory
+        arguments:
+            -
+                - '@BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\SimpleParamProcessorFactory'
+                - '@BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\ComplexParamProcessorFactory'
+
+    BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\SimpleParamProcessorFactory:
+        class: BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\SimpleParamProcessorFactory
+
+    BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\ComplexParamProcessorFactory:
+        arguments: ['@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory']
+
+    BetterSerializer\DataBind\Reader\Instantiator\Factory\InstantiatorFactoryInterface:
+        class: BetterSerializer\DataBind\Reader\Instantiator\Factory\InstantiatorFactory
+        arguments:
+            -
+                - '@BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\StandardInstantiatorFactory'
+                - '@BetterSerializer\DataBind\Reader\Instantiator\Factory\Deserialize\DeserializeInstantiatorFactory'
+
+    BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\StandardInstantiatorFactory:
+        arguments: ['@BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\ParamProcessorFactoryInterface']
+
+    BetterSerializer\DataBind\Reader\Instantiator\Factory\Deserialize\DeserializeInstantiatorFactory:
+        class: BetterSerializer\DataBind\Reader\Instantiator\Factory\Deserialize\DeserializeInstantiatorFactory
+
+    BetterSerializer\DataBind\Reader\Injector\Factory\AbstractFactoryInterface:
+        class: BetterSerializer\DataBind\Reader\Injector\Factory\AbstractFactory
+
+    BetterSerializer\DataBind\Reader\Context\ContextFactoryInterface:
+        class: BetterSerializer\DataBind\Reader\Context\ContextFactory
+
+    BetterSerializer\DataBind\Writer\WriterInterface:
+        class: BetterSerializer\DataBind\Writer\Writer
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\Type\ExtractorInterface'
+            - '@BetterSerializer\DataBind\Writer\Processor\Factory\ProcessorFactoryInterface'
+            - '@BetterSerializer\DataBind\Writer\Context\ContextFactoryInterface'
+
+    BetterSerializer\DataBind\Writer\Type\ExtractorInterface:
+        factory: BetterSerializer\DataBind\Writer\Type\ExtractorBuilder::build
+
+    BetterSerializer\DataBind\Writer\Context\ContextFactoryInterface:
+        class: BetterSerializer\DataBind\Writer\Context\ContextFactory
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\ProcessorFactory:
+        class: BetterSerializer\DataBind\Writer\Processor\Factory\ProcessorFactory
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\RecursiveProcessorFactory:
+        arguments: ['@BetterSerializer\DataBind\Writer\Processor\Factory\ProcessorFactory']
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\CachedProcessorFactory:
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\Processor\Factory\RecursiveProcessorFactory'
+            - '@Doctrine\Common\Cache\Cache'
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\ProcessorFactoryInterface:
+        factory: BetterSerializer\DataBind\Writer\Processor\Factory\ProcessorFactoryBuilder::build
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\Processor\Factory\CachedProcessorFactory'
+            -
+                - '@BetterSerializer\DataBind\Writer\Processor\Factory\PropertyMetaDataChain\SimplePropertyMember'
+                - '@BetterSerializer\DataBind\Writer\Processor\Factory\PropertyMetaDataChain\ComplexPropertyMember'
+            -
+                - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\CollectionMember'
+                - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ClassMember'
+                - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\SimpleMember'
+                - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionMember'
+                - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionCollectionMember'
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\PropertyMetaDataChain\ComplexPropertyMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\Processor\Factory\CachedProcessorFactory'
+            - '@BetterSerializer\DataBind\Writer\Extractor\Factory\AbstractFactoryInterface'
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\PropertyMetaDataChain\SimplePropertyMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\Converter\ConverterFactoryInterface'
+            - '@BetterSerializer\DataBind\Writer\Extractor\Factory\AbstractFactoryInterface'
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\CollectionMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\Converter\ConverterFactoryInterface'
+            - '@BetterSerializer\DataBind\Writer\Processor\Factory\CachedProcessorFactory'
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ClassMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\Processor\Factory\CachedProcessorFactory'
+            - '@BetterSerializer\DataBind\Writer\MetaData\ContextualReaderInterface'
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\SimpleMember:
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\Converter\ConverterFactoryInterface'
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionMember:
+        class: BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionMember
+
+    BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionCollectionMember:
+        arguments: ['@BetterSerializer\DataBind\Writer\Processor\Factory\CachedProcessorFactory']
+
+    BetterSerializer\DataBind\Writer\MetaData\ContextualReaderInterface:
+        alias: BetterSerializer\DataBind\Writer\MetaData\CachedContextualReader
+
+    BetterSerializer\DataBind\Writer\MetaData\CachedContextualReader:
+        arguments:
+            - '@BetterSerializer\DataBind\Writer\MetaData\ContextualReader'
+            - '@Doctrine\Common\Cache\Cache'
+
+    BetterSerializer\DataBind\Writer\MetaData\ContextualReader:
+        arguments: ['@BetterSerializer\DataBind\MetaData\Reader\ReaderInterface']
+
+    BetterSerializer\DataBind\Writer\Converter\ConverterFactoryInterface:
+        class: BetterSerializer\DataBind\Writer\Converter\ConverterFactory
+
+    BetterSerializer\DataBind\Writer\Extractor\Factory\AbstractFactoryInterface:
+        class: BetterSerializer\DataBind\Writer\Extractor\Factory\AbstractFactory
+
+    BetterSerializer\DataBind\MetaData\Reader\Reader:
+        arguments:
+            - '@BetterSerializer\Reflection\Factory\ReflectionClassFactoryInterface'
+            - '@BetterSerializer\DataBind\MetaData\Reader\ClassReader\ClassReaderInterface'
+            - '@BetterSerializer\DataBind\MetaData\Reader\PropertyReader\PropertiesReaderInterface'
+            - '@BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\ConstructorParamsReaderInterface'
+
+    BetterSerializer\DataBind\MetaData\Reader\ReaderInterface:
+        class: BetterSerializer\DataBind\MetaData\Reader\CachedReader
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Reader\Reader'
+            - '@Doctrine\Common\Cache\Cache'
+
+    BetterSerializer\DataBind\MetaData\Reader\ClassReader\ClassReaderInterface:
+        class: BetterSerializer\DataBind\MetaData\Reader\ClassReader\ClassReader
+        arguments: ['@Doctrine\Common\Annotations\AnnotationReader']
+
+    BetterSerializer\DataBind\MetaData\Reader\PropertyReader\PropertiesReaderInterface:
+        class: BetterSerializer\DataBind\MetaData\Reader\PropertyReader\PropertiesReader
+        arguments:
+            - '@Doctrine\Common\Annotations\AnnotationReader'
+            - '@BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactoryInterface'
+            -
+                - '@BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeReader\AnnotationPropertyTypeReader'
+                - '@BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeReader\DocBlockPropertyTypeReader'
+
+    BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeReader\AnnotationPropertyTypeReader:
+        arguments: ['@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface']
+
+    BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeReader\DocBlockPropertyTypeReader:
+        arguments:
+            - '@phpDocumentor\Reflection\DocBlockFactoryInterface'
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface'
+
+    BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\ConstructorParamsReaderInterface:
+        class: BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\ConstructorParamsReader
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\Combiner\PropertyWithConstructorParamCombinerInterface'
+            - '@BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\TypeReader\TypeReaderInterface'
+
+    BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\Combiner\PropertyWithConstructorParamCombinerInterface:
+        class: BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\Combiner\PropertyWithConstructorParamCombiner
+        arguments:
+            -
+                - '@BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\Combiner\Chained\AnnotationCombiner'
+                - '@BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\Combiner\Chained\EqualNamesCombiner'
+
+    BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\Combiner\Chained\AnnotationCombiner:
+        arguments: ['@Doctrine\Common\Annotations\AnnotationReader']
+
+    BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\Combiner\Chained\EqualNamesCombiner:
+        class: BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\Combiner\Chained\EqualNamesCombiner
+
+    BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\TypeReader\TypeReaderInterface:
+        class: BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\TypeReader\TypeReader
+        arguments:
+            -
+                - '@BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\TypeReader\Chained\NativeTypeReader'
+                - '@BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\TypeReader\Chained\DocBlockTypeReader'
+
+    BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\TypeReader\Chained\NativeTypeReader:
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface'
+            - '@BetterSerializer\DataBind\MetaData\Type\Factory\NativeTypeFactoryInterface'
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\NativeTypeFactoryInterface:
+        class: BetterSerializer\DataBind\MetaData\Type\Factory\NativeTypeFactory
+
+    BetterSerializer\DataBind\MetaData\Reader\ConstructorParamReader\TypeReader\Chained\DocBlockTypeReader:
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactoryInterface'
+            - '@phpDocumentor\Reflection\DocBlockFactoryInterface'
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface'
+
+    Doctrine\Common\Annotations\AnnotationReader:
+        factory: BetterSerializer\DataBind\MetaData\Reader\AnnotationReaderFactory::newAnnotationReader
+
+    phpDocumentor\Reflection\DocBlockFactoryInterface:
+        factory: phpDocumentor\Reflection\DocBlockFactory::createInstance
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactory:
+        class: BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactory
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactoryInterface:
+        factory: BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactoryBuilder::build
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactory'
+            -
+                - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\SimpleMember'
+                - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\DateTimeMember'
+                - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ExtensionMember'
+                - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ExtensionCollectionMember'
+                - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ClassMember'
+                - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\InterfaceMember'
+                - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ArrayMember'
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ArrayMember:
+        arguments: ['@BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactory']
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ExtensionMember:
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactory'
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface'
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ExtensionCollectionMember:
+        arguments: ['@BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactory']
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\Chain\DateTimeMember:
+        class: BetterSerializer\DataBind\MetaData\Type\Factory\Chain\DateTimeMember
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ClassMember:
+        class: BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ClassMember
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\Chain\InterfaceMember:
+        class: BetterSerializer\DataBind\MetaData\Type\Factory\Chain\InterfaceMember
+
+    BetterSerializer\DataBind\MetaData\Type\Factory\Chain\SimpleMember:
+        class: BetterSerializer\DataBind\MetaData\Type\Factory\Chain\SimpleMember
+
+    BetterSerializer\DataBind\Reader\Converter\ConverterFactoryInterface:
+        class: BetterSerializer\DataBind\Reader\Converter\ConverterFactory
+
+    BetterSerializer\Reflection\Factory\ReflectionClassFactoryInterface:
+        class: BetterSerializer\Reflection\Factory\ReflectionClassFactory
+        arguments: ['@BetterSerializer\Reflection\UseStatement\UseStatementsExtractorInterface']
+
+    BetterSerializer\Reflection\UseStatement\UseStatementsExtractorInterface:
+        class: BetterSerializer\Reflection\UseStatement\UseStatementsExtractor
+        arguments:
+            - '@BetterSerializer\Reflection\UseStatement\Factory\CodeReaderFactoryInterface'
+            - '@BetterSerializer\Reflection\UseStatement\ParserInterface'
+
+    BetterSerializer\Reflection\UseStatement\Factory\CodeReaderFactoryInterface:
+        class: BetterSerializer\Reflection\UseStatement\Factory\CodeReaderFactory
+
+    BetterSerializer\Reflection\UseStatement\ParserInterface:
+        class: BetterSerializer\Reflection\UseStatement\Parser
+
+    Doctrine\Common\Cache\Cache:
+        factory: BetterSerializer\Cache\Factory::createCache
+        arguments: [ '@BetterSerializer\Cache\Config\ConfigInterface' ]
+
+    BetterSerializer\Cache\Config\ConfigInterface:
+        class: BetterSerializer\Cache\Config\NullConfig
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\ParametersParserInterface:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\ParametersParser
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParser
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Detector\DetectorInterface'
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\ParametersParserInterface'
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Detector\DetectorInterface:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Detector\Detector
+        arguments:
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\ParserChainInterface'
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\ResolverChainInterface'
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\ParserChainInterface:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\ParserChain
+        arguments:
+            -
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\DocBlockArrayParser'
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\SerializerFormatParser'
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\DocBlockArrayParser:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\DocBlockArrayParser
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\SerializerFormatParser:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Format\SerializerFormatParser
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\ResolverChainInterface:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\ResolverChain
+        arguments:
+            -
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\PrimitiveTypeResolver'
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherTypeResolver'
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\PrimitiveTypeResolver:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\PrimitiveTypeResolver
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherTypeResolver:
+        arguments:
+            -
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\PassThroughGuesser'
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\UseStmtGuesser'
+            - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\TypeClassResolverChainInterface'
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\PassThroughGuesser:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\PassThroughGuesser
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\UseStmtGuesser:
+        arguments: ['@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\NamespaceFragmentsParserInterface']
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\NamespaceFragmentsParserInterface:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\NamespaceFragmentsParser
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\TypeClassResolverChainInterface:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\TypeClassResolverChain
+        arguments:
+            -
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\ClassResolver'
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\InterfaceResolver'
+                - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\ExtensionResolver'
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\ClassResolver:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\ClassResolver
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\InterfaceResolver:
+        class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\InterfaceResolver
+
+    BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\ExtensionResolver:
+        arguments: ['@BetterSerializer\Extension\Registry\ExtensionsCollectionInterface']
+
+    TypeExtensionRegistrator:
+        class: BetterSerializer\Extension\Registry\Registrator\ExtensionRegistrator
+        arguments:
+            - BetterSerializer\Common\TypeExtensionInterface
+            - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ExtensionMember'
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionMember'
+            - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionMember'
+
+    CollectionExtensionRegistrator:
+        class: BetterSerializer\Extension\Registry\Registrator\ExtensionRegistrator
+        arguments:
+            - BetterSerializer\Common\CollectionExtensionInterface
+            - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ExtensionCollectionMember'
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionCollectionMember'
+            - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionCollectionMember'
+
+    BetterSerializer\Extension\Registry\ExtensionRegistryInterface:
+        class: BetterSerializer\Extension\Registry\ExtensionRegistry
+        arguments:
+            - '@BetterSerializer\Extension\Registry\ExtensionsCollectionInterface'
+            -
+                - '@TypeExtensionRegistrator'
+                - '@CollectionExtensionRegistrator'
+
+    BetterSerializer\Extension\Registry\ExtensionsCollectionInterface:
+        class: BetterSerializer\Extension\Registry\ExtensionsCollection

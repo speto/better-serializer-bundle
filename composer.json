@@ -1,0 +1,33 @@
+{
+  "name": "better-serializer/symfony-bundle",
+  "homepage": "https://github.com/better-serialier/symfony-bundle",
+  "type": "library",
+  "description": "Symfony bundle for the BetterSerializer de/serialization library.",
+  "license": "MIT",
+  "authors": [
+    {
+        "name": "Martin Fris / Rastusik",
+        "email": "rasta@lj.sk"
+    }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "BetterSerializerBundle\\": ""
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BetterSerializerBundle\\Tests\\": "Tests/"
+    }
+  },
+  "require": {
+    "php": ">=7.1",
+    "better-serializer/better-serializer": "dev-master"
+  },
+  "require-dev": {
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
