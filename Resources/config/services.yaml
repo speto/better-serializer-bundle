@@ -336,7 +336,17 @@ services:
         arguments: [ '@BetterSerializer\Cache\Config\ConfigInterface' ]
 
     BetterSerializer\Cache\Config\ConfigInterface:
+        alias: BetterSerializer\Cache\Config\NullConfig
+
+    BetterSerializer\Cache\Config\NullConfig:
         class: BetterSerializer\Cache\Config\NullConfig
+
+    BetterSerializer\Cache\Config\ApcuConfig:
+        class: BetterSerializer\Cache\Config\ApcuConfig
+
+    BetterSerializer\Cache\Config\FileSystemConfig:
+        class: BetterSerializer\Cache\Config\FileSystemConfig
+        arguments: [ '%kernel.cache_dir%/better_serializer' ]
 
     BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\ParametersParserInterface:
         class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\ParametersParser

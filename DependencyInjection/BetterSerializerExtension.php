@@ -7,6 +7,11 @@ declare(strict_types=1);
 
 namespace BetterSerializerBundle\DependencyInjection;
 
+use BetterSerializer\Cache\Config\ApcuConfig;
+use BetterSerializer\Cache\Config\ConfigInterface;
+use BetterSerializer\Cache\Config\FileSystemConfig;
+use BetterSerializerBundle\Config\Cache;
+use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
@@ -32,5 +37,11 @@ class BetterSerializerExtension extends ConfigurableExtension
     {
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
+
+        if ($mergedConfig['cache'] === Cache::APCU) {
+            $container->setAlias(ConfigInterface::class, new Alias(ApcuConfig::class, false));
+        } elseif ($mergedConfig['cache'] === Cache::FILESYSTEM) {
+            $container->setAlias(ConfigInterface::class, new Alias(FileSystemConfig::class, false));
+        }
     }
 }
