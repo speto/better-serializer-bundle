@@ -35,6 +35,9 @@ class Configuration implements ConfigurationInterface
                     ->isRequired()
                     ->cannotBeEmpty()
                 ->end()
+                ->arrayNode('extensions')
+                    ->scalarPrototype()->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

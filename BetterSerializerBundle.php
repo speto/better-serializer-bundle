@@ -14,10 +14,4 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 final class BetterSerializerBundle extends Bundle
 {
-
-    /**
-     */
-    public function __construct()
-    {
-    }
 }

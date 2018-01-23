@@ -6,6 +6,7 @@ services:
 
     better_serializer:
         alias: BetterSerializer\Serializer
+        public: true
 
     BetterSerializer\Serializer:
         arguments:
@@ -417,31 +418,33 @@ services:
         class: BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\InterfaceResolver
 
     BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\Resolver\HigherType\ExtensionResolver:
-        arguments: ['@BetterSerializer\Extension\Registry\ExtensionsCollectionInterface']
+        arguments: ['@BetterSerializer\Extension\Registry\CombinedCollection']
 
     TypeExtensionRegistrator:
-        class: BetterSerializer\Extension\Registry\Registrator\ExtensionRegistrator
+        class: BetterSerializer\Extension\Registry\Registrator\CollectingRegistrator
         arguments:
             - BetterSerializer\Common\TypeExtensionInterface
-            - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ExtensionMember'
-            - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionMember'
-            - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionMember'
+            - '@BetterSerializer\Extension\Registry\TypeExtensionCollection'
 
     CollectionExtensionRegistrator:
-        class: BetterSerializer\Extension\Registry\Registrator\ExtensionRegistrator
+        class: BetterSerializer\Extension\Registry\Registrator\CollectingRegistrator
         arguments:
             - BetterSerializer\Common\CollectionExtensionInterface
-            - '@BetterSerializer\DataBind\MetaData\Type\Factory\Chain\ExtensionCollectionMember'
-            - '@BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\ExtensionCollectionMember'
-            - '@BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\ExtensionCollectionMember'
+            - '@BetterSerializer\Extension\Registry\CollectionExtensionCollection'
 
-    BetterSerializer\Extension\Registry\ExtensionRegistryInterface:
-        class: BetterSerializer\Extension\Registry\ExtensionRegistry
+    BetterSerializer\Extension\Registry\RegistryInterface:
+        class: BetterSerializer\Extension\Registry\CollectingRegistry
         arguments:
-            - '@BetterSerializer\Extension\Registry\ExtensionsCollectionInterface'
+            - '@BetterSerializer\Extension\Registry\CombinedCollection'
             -
                 - '@TypeExtensionRegistrator'
                 - '@CollectionExtensionRegistrator'
 
-    BetterSerializer\Extension\Registry\ExtensionsCollectionInterface:
-        class: BetterSerializer\Extension\Registry\ExtensionsCollection
+    BetterSerializer\Extension\Registry\CombinedCollection:
+        class: BetterSerializer\Extension\Registry\Collection
+
+    BetterSerializer\Extension\Registry\TypeExtensionCollection:
+        class: BetterSerializer\Extension\Registry\Collection
+
+    BetterSerializer\Extension\Registry\CollectionExtensionCollection:
+        class: BetterSerializer\Extension\Registry\Collection
