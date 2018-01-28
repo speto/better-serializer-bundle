@@ -1,0 +1,46 @@
+parameters:
+  git_dir: .
+  bin_dir: vendor/bin
+  process_timeout: 600
+  tasks:
+    phpcs:
+      standard: PSR2
+      show_warnings: true
+      tab_width: 4
+      whitelist_patterns: []
+      encoding: ~
+      ignore_patterns: []
+      sniffs: []
+      triggered_by: [php]
+    phpcsfixer2:
+      allow_risky: true
+      cache_file: .php_cs.cache
+      config: .php_cs
+      using_cache: true
+      config_contains_finder: false
+      verbose: true
+      diff: false
+      triggered_by: [php]
+    phplint: ~
+    phpmd:
+      exclude: []
+      ruleset: ['Dev/phpmd.ruleset.xml']
+      triggered_by: [php]
+    phpparser: ~
+    phpstan:
+      autoload_file: ~
+      configuration: Dev/phpstan.neon
+      level: 7
+      triggered_by: [php]
+    phpunit: ~
+    infection:
+      threads: 2
+      test_framework: phpunit
+      only_covered: true
+      configuration: infection.json
+      min_msi: ~
+      min_covered_msi: ~
+      mutators: []
+      triggered_by: [php]
+    phpversion: ~
+    securitychecker: ~

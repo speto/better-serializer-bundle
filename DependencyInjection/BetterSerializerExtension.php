@@ -12,6 +12,7 @@ use BetterSerializer\Cache\Config\ConfigInterface;
 use BetterSerializer\Cache\Config\FileSystemConfig;
 use BetterSerializer\Common\CollectionExtensionInterface;
 use BetterSerializer\Common\TypeExtensionInterface;
+// @codingStandardsIgnoreStart
 use BetterSerializer\DataBind\MetaData\Type\Factory\Chain\{
     ExtensionMember as TypeFactoryExtensionMember,
     ExtensionCollectionMember as CollectionFactoryExtensionMember
@@ -24,6 +25,7 @@ use BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\{
     ExtensionMember as TypeWriterFactoryExtensionMember,
     ExtensionCollectionMember as CollectionWriterFactoryExtensionMember
 };
+// @codingStandardsIgnoreEnd
 use BetterSerializer\Extension\DoctrineCollection;
 use BetterSerializer\Extension\Registry\RegistryInterface;
 use BetterSerializerBundle\Config\Cache;
@@ -33,15 +35,14 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Symfony\Component\DependencyInjection\Loader;
 use Exception;
-use RuntimeException;
 
 /**
- * @SuppressWarnings(PHPMD.UnusedLocalVariable)
- * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  * This is the class that loads and manages your bundle configuration.
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 class BetterSerializerExtension extends ConfigurableExtension
 {
@@ -77,7 +78,6 @@ class BetterSerializerExtension extends ConfigurableExtension
     /**
      * @param array $mergedConfig
      * @param ContainerBuilder $container
-     * @throws RuntimeException
      * @throws Exception
      * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
@@ -101,11 +101,7 @@ class BetterSerializerExtension extends ConfigurableExtension
 
         $typeCollections = $registry->getTypeCollections();
 
-        if (!isset($typeCollections[TypeExtensionInterface::class])) {
-            throw new RuntimeException('Invalid bundle configuration.');
-        }
-
-        $typeExtensions = $typeCollections[TypeExtensionInterface::class]->toArray();
+        $typeExtensions = array_values($typeCollections[TypeExtensionInterface::class]->toArray());
 
         $typeFactoryMemberT = $container->getDefinition(TypeFactoryExtensionMember::class);
         $typeFactoryMemberT->setArgument(2, $typeExtensions);
@@ -116,11 +112,7 @@ class BetterSerializerExtension extends ConfigurableExtension
         $wrProcFactoryMemberT = $container->getDefinition(TypeWriterFactoryExtensionMember::class);
         $wrProcFactoryMemberT->setArgument(0, $typeExtensions);
 
-        if (!isset($typeCollections[CollectionExtensionInterface::class])) {
-            throw new RuntimeException('Invalid bundle configuration.');
-        }
-
-        $collectionExtensions = $typeCollections[CollectionExtensionInterface::class]->toArray();
+        $collectionExtensions = array_values($typeCollections[CollectionExtensionInterface::class]->toArray());
 
         $typeFactoryMemberC = $container->getDefinition(CollectionFactoryExtensionMember::class);
         $typeFactoryMemberC->setArgument(1, $collectionExtensions);
