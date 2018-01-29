@@ -7,6 +7,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/better-serializer/better-serializer-bundle/v/unstable)](//packagist.org/packages/better-serializer/better-serializer-bundle)
 [![License](https://poser.pugx.org/better-serializer/better-serializer-bundle/license)](https://packagist.org/packages/better-serializer/better-serializer-bundle)
 [![composer.lock available](https://poser.pugx.org/better-serializer/better-serializer-bundle/composerlock)](https://packagist.org/packages/better-serializer/better-serializer-bundle)
+[![Appveyor status](https://ci.appveyor.com/api/projects/status/github/better-serializer/better-serializer-bundle?svg=true)](https://ci.appveyor.com/api/projects/status/github/better-serializer/better-serializer-bundle)
 
 This is a Symfony integration bundle for [Better Serializer](https://github.com/better-serializer/better-serializer) 
 (a general PHP serializer library). 
