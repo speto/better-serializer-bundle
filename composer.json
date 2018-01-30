@@ -33,7 +33,7 @@
     ],
     "require": {
         "php": ">=7.1",
-        "better-serializer/better-serializer": "dev-master",
+        "better-serializer/better-serializer": "^0.0.6",
         "symfony/framework-bundle": "^4.0"
     },
     "require-dev": {

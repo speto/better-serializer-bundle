@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f00c285efc33a9f385f222a76a6430e4",
+    "content-hash": "8c66356035f2b098f57e4fb3894d6462",
     "packages": [
         {
             "name": "better-serializer/better-serializer",
-            "version": "dev-master",
+            "version": "0.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/better-serializer/better-serializer.git",
-                "reference": "c64723925c58627b4afeb65b8902c4442ff1a875"
+                "reference": "59e4511a61aaaa8208c0ee721027729ce4373c34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/better-serializer/better-serializer/zipball/c64723925c58627b4afeb65b8902c4442ff1a875",
-                "reference": "c64723925c58627b4afeb65b8902c4442ff1a875",
+                "url": "https://api.github.com/repos/better-serializer/better-serializer/zipball/59e4511a61aaaa8208c0ee721027729ce4373c34",
+                "reference": "59e4511a61aaaa8208c0ee721027729ce4373c34",
                 "shasum": ""
             },
             "require": {
@@ -64,7 +64,7 @@
                 }
             ],
             "description": "General de/serializer for vatious serialization formats.",
-            "time": "2018-01-22T21:54:31+00:00"
+            "time": "2018-01-29T22:19:24+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -6036,7 +6036,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "better-serializer/better-serializer": 20,
         "phpro/grumphp": 20
     },
     "prefer-stable": false,
