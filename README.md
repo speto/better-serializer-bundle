@@ -14,8 +14,9 @@ This is a Symfony integration bundle for [Better Serializer](https://github.com/
 
 ## Features
 
-Currently only caching backend type and extenral extensions configuration is implemented. Other things will come
-as soon as they're implemented in [Better Serializer](https://github.com/better-serializer/better-serializer).
+Currently only caching backend type, extenral extensions and general naming strategy configuration is implemented. 
+Other things will come as soon as they're implemented in 
+[Better Serializer](https://github.com/better-serializer/better-serializer).
 
 ## Current state
 

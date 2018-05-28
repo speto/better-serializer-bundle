@@ -11,12 +11,17 @@ use BetterSerializer\Cache\Config\ApcuConfig;
 use BetterSerializer\Cache\Config\ConfigInterface;
 use BetterSerializer\Cache\Config\FileSystemConfig;
 use BetterSerializer\Common\CollectionExtensionInterface;
+use BetterSerializer\Common\NamingStrategy;
 use BetterSerializer\Common\TypeExtensionInterface;
 // @codingStandardsIgnoreStart
 use BetterSerializer\DataBind\MetaData\Type\Factory\Chain\{
     ExtensionMember as TypeFactoryExtensionMember,
     ExtensionCollectionMember as CollectionFactoryExtensionMember
 };
+use BetterSerializer\DataBind\Naming\PropertyNameTranslator\CamelCaseTranslator;
+use BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator;
+use BetterSerializer\DataBind\Naming\PropertyNameTranslator\SnakeCaseTranslator;
+use BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface;
 use BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\{
     ExtensionMember as TypeReaderFactoryExtensionMember,
     ExtensionCollectionMember as CollectionReaderFactoryExtensionMember
@@ -35,6 +40,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Symfony\Component\DependencyInjection\Loader;
 use Exception;
+use UnexpectedValueException;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -59,6 +65,7 @@ class BetterSerializerExtension extends ConfigurableExtension
 
         $this->applyCache($mergedConfig, $container);
         $this->applyExtensions($mergedConfig, $container);
+        $this->applyNamingStrategy($mergedConfig, $container);
     }
 
     /**
@@ -122,5 +129,33 @@ class BetterSerializerExtension extends ConfigurableExtension
 
         $wrProcFactoryMemberC = $container->getDefinition(CollectionWriterFactoryExtensionMember::class);
         $wrProcFactoryMemberC->setArgument(1, $collectionExtensions);
+    }
+
+    /**
+     * @param array $mergedConfig
+     * @param ContainerBuilder $container
+     * @throws UnexpectedValueException
+     * @throws \LogicException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     */
+    private function applyNamingStrategy(array $mergedConfig, ContainerBuilder $container): void
+    {
+        $namingStrategy = $mergedConfig['namingStrategy'];
+
+        if (!NamingStrategy::has($namingStrategy)) {
+            throw new UnexpectedValueException(sprintf('Invalid naming strategy: %s', $namingStrategy));
+        }
+
+        $translatorClass = IdenticalTranslator::class;
+
+        if ($namingStrategy === NamingStrategy::CAMEL_CASE) {
+            $translatorClass = CamelCaseTranslator::class;
+        } elseif ($namingStrategy === NamingStrategy::SNAKE_CASE) {
+            $translatorClass = SnakeCaseTranslator::class;
+        }
+
+        $translatorInterface = $container->getDefinition(TranslatorInterface::class);
+        $translatorInterface->setClass($translatorClass);
     }
 }

@@ -13,6 +13,12 @@ services:
             - '@BetterSerializer\DataBind\Reader\ReaderInterface'
             - '@BetterSerializer\DataBind\Writer\WriterInterface'
 
+    BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface:
+        class: BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator
+
+    BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator:
+        class: BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator
+
     BetterSerializer\DataBind\Reader\ReaderInterface:
         class: BetterSerializer\DataBind\Reader\Reader
         arguments:
@@ -50,11 +56,13 @@ services:
         arguments:
             - '@BetterSerializer\DataBind\Reader\Converter\ConverterFactoryInterface'
             - '@BetterSerializer\DataBind\Reader\Injector\Factory\AbstractFactoryInterface'
+            - '@BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface'
 
     BetterSerializer\DataBind\Reader\Processor\Factory\PropertyMetaDataChain\ComplexPropertyMember:
         arguments:
             - '@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory'
             - '@BetterSerializer\DataBind\Reader\Injector\Factory\AbstractFactoryInterface'
+            - '@BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface'
 
     BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\CollectionMember:
         arguments:
@@ -86,9 +94,13 @@ services:
 
     BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\SimpleParamProcessorFactory:
         class: BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\SimpleParamProcessorFactory
+        arguments: ['@BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface']
 
     BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\ComplexParamProcessorFactory:
-        arguments: ['@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory']
+        class: BetterSerializer\DataBind\Reader\Instantiator\Factory\Standard\ParamProcessor\Chain\ComplexParamProcessorFactory
+        arguments:
+            - '@BetterSerializer\DataBind\Reader\Processor\Factory\CachedProcessorFactory'
+            - '@BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface'
 
     BetterSerializer\DataBind\Reader\Instantiator\Factory\InstantiatorFactoryInterface:
         class: BetterSerializer\DataBind\Reader\Instantiator\Factory\InstantiatorFactory
@@ -151,11 +163,14 @@ services:
         arguments:
             - '@BetterSerializer\DataBind\Writer\Processor\Factory\CachedProcessorFactory'
             - '@BetterSerializer\DataBind\Writer\Extractor\Factory\AbstractFactoryInterface'
+            - '@BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface'
+
 
     BetterSerializer\DataBind\Writer\Processor\Factory\PropertyMetaDataChain\SimplePropertyMember:
         arguments:
             - '@BetterSerializer\DataBind\Writer\Converter\ConverterFactoryInterface'
             - '@BetterSerializer\DataBind\Writer\Extractor\Factory\AbstractFactoryInterface'
+            - '@BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface'
 
     BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\CollectionMember:
         arguments:
@@ -215,15 +230,21 @@ services:
         class: BetterSerializer\DataBind\MetaData\Reader\PropertyReader\PropertiesReader
         arguments:
             - '@Doctrine\Common\Annotations\AnnotationReader'
+            - '@BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeResolver\TypeResolverChainInterface'
+
+
+    BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeResolver\TypeResolverChainInterface:
+        class: BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeResolver\TypeResolverChain
+        arguments:
             - '@BetterSerializer\DataBind\MetaData\Type\Factory\TypeFactoryInterface'
             -
-                - '@BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeReader\AnnotationPropertyTypeReader'
-                - '@BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeReader\DocBlockPropertyTypeReader'
+                - '@BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeResolver\AnnotationPropertyTypeResolver'
+                - '@BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeResolver\DocBlockPropertyTypeResolver'
 
-    BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeReader\AnnotationPropertyTypeReader:
+    BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeResolver\AnnotationPropertyTypeResolver:
         arguments: ['@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface']
 
-    BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeReader\DocBlockPropertyTypeReader:
+    BetterSerializer\DataBind\MetaData\Reader\PropertyReader\TypeResolver\DocBlockPropertyTypeResolver:
         arguments:
             - '@phpDocumentor\Reflection\DocBlockFactoryInterface'
             - '@BetterSerializer\DataBind\MetaData\Type\StringFormType\Parser\StringTypeParserInterface'

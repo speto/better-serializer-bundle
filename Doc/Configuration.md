@@ -49,5 +49,6 @@ better_serializer:
     extensions:
         - CustomLib\CustomExtension1
         - CustomLib\CustomExtension2
+    namingStrategy: !php/const 'BetterSerializer\Common\NamingStrategy::CAMEL_CASE'
         ...
 ```
