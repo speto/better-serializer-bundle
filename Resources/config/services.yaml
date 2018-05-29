@@ -14,10 +14,23 @@ services:
             - '@BetterSerializer\DataBind\Writer\WriterInterface'
 
     BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface:
-        class: BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator
+        alias: BetterSerializer\DataBind\Naming\PropertyNameTranslator\AnnotationTranslator
 
     BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator:
         class: BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator
+
+    BetterSerializer\DataBind\Naming\PropertyNameTranslator\CamelCaseTranslator:
+        class: BetterSerializer\DataBind\Naming\PropertyNameTranslator\CamelCaseTranslator
+
+    BetterSerializer\DataBind\Naming\PropertyNameTranslator\SnakeCaseTranslator:
+        class: BetterSerializer\DataBind\Naming\PropertyNameTranslator\SnakeCaseTranslator
+
+    BetterSerializer\DataBind\Naming\PropertyNameTranslator\AnnotationTranslator:
+        class: BetterSerializer\DataBind\Naming\PropertyNameTranslator\AnnotationTranslator
+        arguments: ['@NamingStrategyTranslator']
+
+    NamingStrategyTranslator:
+        alias: BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator
 
     BetterSerializer\DataBind\Reader\ReaderInterface:
         class: BetterSerializer\DataBind\Reader\Reader

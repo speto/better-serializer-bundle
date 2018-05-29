@@ -14,7 +14,6 @@ use BetterSerializer\Common\NamingStrategy;
 use BetterSerializer\DataBind\Naming\PropertyNameTranslator\CamelCaseTranslator;
 use BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator;
 use BetterSerializer\DataBind\Naming\PropertyNameTranslator\SnakeCaseTranslator;
-use BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface;
 use BetterSerializerBundle\BetterSerializerBundle;
 use BetterSerializerBundle\Config\Cache;
 // @codingStandardsIgnoreStart
@@ -31,6 +30,7 @@ use BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\{
     ExtensionCollectionMember as CollectionWriterFactoryExtensionMember
 };
 // @codingStandardsIgnoreEnd
+use BetterSerializerBundle\Config\ContainerService;
 use BetterSerializerBundle\Tests\Helper\BooleanStringExtension;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -166,7 +166,6 @@ class ConfigurationTest extends TestCase
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @dataProvider namingStrategyDataProvider
      */
     public function testConfigNamingStrategy(string $namingStrategy, string $expTranslatorClass): void
@@ -178,9 +177,9 @@ class ConfigurationTest extends TestCase
             ],
         ]);
 
-        $translatorClass = $container->getDefinition(TranslatorInterface::class);
+        $translatorAlias = $container->getAlias(ContainerService::NAMING_STRATEGY_TRANSLATOR);
 
-        $this->assertEquals($expTranslatorClass, $translatorClass->getClass());
+        $this->assertEquals($expTranslatorClass, (string) $translatorAlias);
     }
 
     /**
@@ -199,7 +198,7 @@ class ConfigurationTest extends TestCase
      * @throws \LogicException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      */
     public function testDefaultConfigNamingStrategy(): void
     {
@@ -209,9 +208,9 @@ class ConfigurationTest extends TestCase
             ],
         ]);
 
-        $translatorClass = $container->getDefinition(TranslatorInterface::class);
+        $translatorAlias = $container->getAlias(ContainerService::NAMING_STRATEGY_TRANSLATOR);
 
-        $this->assertEquals(IdenticalTranslator::class, $translatorClass->getClass());
+        $this->assertEquals(IdenticalTranslator::class, (string) $translatorAlias);
     }
 
     /**

@@ -21,7 +21,6 @@ use BetterSerializer\DataBind\MetaData\Type\Factory\Chain\{
 use BetterSerializer\DataBind\Naming\PropertyNameTranslator\CamelCaseTranslator;
 use BetterSerializer\DataBind\Naming\PropertyNameTranslator\IdenticalTranslator;
 use BetterSerializer\DataBind\Naming\PropertyNameTranslator\SnakeCaseTranslator;
-use BetterSerializer\DataBind\Naming\PropertyNameTranslator\TranslatorInterface;
 use BetterSerializer\DataBind\Reader\Processor\Factory\TypeChain\{
     ExtensionMember as TypeReaderFactoryExtensionMember,
     ExtensionCollectionMember as CollectionReaderFactoryExtensionMember
@@ -34,6 +33,7 @@ use BetterSerializer\DataBind\Writer\Processor\Factory\TypeChain\{
 use BetterSerializer\Extension\DoctrineCollection;
 use BetterSerializer\Extension\Registry\RegistryInterface;
 use BetterSerializerBundle\Config\Cache;
+use BetterSerializerBundle\Config\ContainerService;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -136,7 +136,7 @@ class BetterSerializerExtension extends ConfigurableExtension
      * @param ContainerBuilder $container
      * @throws UnexpectedValueException
      * @throws \LogicException
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
     private function applyNamingStrategy(array $mergedConfig, ContainerBuilder $container): void
@@ -155,7 +155,6 @@ class BetterSerializerExtension extends ConfigurableExtension
             $translatorClass = SnakeCaseTranslator::class;
         }
 
-        $translatorInterface = $container->getDefinition(TranslatorInterface::class);
-        $translatorInterface->setClass($translatorClass);
+        $container->setAlias(ContainerService::NAMING_STRATEGY_TRANSLATOR, $translatorClass);
     }
 }
