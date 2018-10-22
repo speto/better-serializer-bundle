@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1218ddcc8290b45c5fc3e436da1388f7",
+    "content-hash": "4e1e1a8eb12590ba5675db65bb3145f2",
     "packages": [
         {
             "name": "better-serializer/better-serializer",
